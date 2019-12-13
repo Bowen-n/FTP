@@ -11,7 +11,7 @@ from PyQt5.QtWidgets import QApplication,QMainWindow
 import sys
 from PyQt5.QtGui import QIcon
 import os
-app_icon_path = os.path.join(os.path.dirname(__file__), 'icons')
+app_icon_path = os.path.join(os.path.dirname(__file__), '../icons')
 qIcon = lambda name: QIcon(os.path.join(app_icon_path, name))
 
 

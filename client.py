@@ -19,10 +19,10 @@ from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QApplication, QMainWindow,QInputDialog,QLineEdit,QWidget,QTreeWidgetItem,QMessageBox
 from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import *
-from ClientGui import Ui_Form
+from GUI.ClientGui import Ui_Form
 from utils import fileProperty
 from ftplib import FTP
-from ftp_dialog import *
+from dialog import *
 
 app_icon_path = os.path.join(os.path.dirname(__file__), 'icons')
 qIcon = lambda name: QIcon(os.path.join(app_icon_path, name))

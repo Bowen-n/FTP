@@ -1,7 +1,7 @@
 import sys
 import PyQt5
 from PyQt5.QtWidgets import *
-from LoginDialog import Ui_LoginDialog
+from GUI.LoginGui import Ui_LoginDialog
 import time
 from threading import Thread
 
