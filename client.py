@@ -1,16 +1,3 @@
-#cdToRemoteDirectory(self, item, column)
-#cdToLocalDirectory
-#cdToLocalHomeDirectory
-
-# 12.9 
-# cdToRemoteDirectory
-# cdToRemoteHomeDirectory (same to above)
-
-# cdToLocalPath cdToRemotePath trigger(enter) (input path)
-# updateLocalFileList updateRemoteFileList (display current pwd in LineEdit)
-
-#__init
-#local_right_menu
 
 import os
 import sys

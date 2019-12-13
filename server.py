@@ -70,20 +70,12 @@ class FtpServerProtocol(threading.Thread):
     def start_data_sock(self):
         print('start data socket: Openning a data channel\n')
         try:
-            '''
-            self.dataSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            if self.pasv_mode:
-                self.dataSock, self.address = self.serverSock.accept()
-
-            else: # ACCTIVE MODE, connect to addr and port given by client
-            '''
             self.dataSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
             self.dataSock.connect((self.dataSockAddr, self.dataSockPort))
         except socket.error as err:
             print('start data socket{}\n'.format(err))
     
 
-    
     def stop_data_sock(self):
         print('stop data socket: closing a data channel\n')
         try:
@@ -131,29 +123,10 @@ class FtpServerProtocol(threading.Thread):
             self._send_command('200 Binary mode.\r\n')
         elif self.mode == 'A':
             self._send_command('200 Ascii mode.\r\n')
-    
-    '''
-    def PASV(self, cmd):
-        print('PASV:', cmd, '\n')
-        self.pasv_mode = True
-        self.serverSock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.serverSock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-        self.serverSock.bind(('192.168.92.128', 0))
-        self.serverSock.listen(5)
-        addr, port = self.serverSock.getsockname()
-        self._send_command('227 Entering Passive Mode') # TODO
-    
-    '''
 
     # client tells server addr and port it watches
     def PORT(self, cmd):
         print('PORT:', cmd, '\r')
-
-        '''
-        if self.pasv_mode:
-            self.serverSock.close()
-            self.pasv_mode = False
-        '''
 
         # TODO:
         l=cmd.split(',')
@@ -209,14 +182,6 @@ class FtpServerProtocol(threading.Thread):
     def PWD(self, cmd):
         print('PWD:{}\n'.format(cmd))
         self._send_command('257 "{}"\r\n'.format(self.cwd))
-    
-    # up directory
-    '''
-    def CDUP(self, cmd):
-        self.cwd = os.path.abspath(os.path.join(self.cwd, '..'))
-        print('CDPU:{}\n'.format(self.cwd))
-        self._send_command('200 Ok.\r\n')
-    '''
 
     def _permission(self, type_):
         '''
@@ -382,96 +347,6 @@ class FtpServerProtocol(threading.Thread):
         self.stop_data_sock()
         self._send_command('226 Transfer completed.\r\n')
 
-    '''
-    # append 
-    def APPE(self, filename):
-        if not self.authenticated:
-            self._send_command('530 APPE failed User not logged in.\r\n')
-            return
-        
-        pathname = filename.startswith(os.path.sep) and filename or os.path.join(self.cwd, filename)
-        print('APPE:{}\n'.format(pathname))
-
-        self._send_command('150 Opening data connection.\r\n')
-        self.start_data_sock()
-
-        # new file
-        if not os.path.exists(pathname):
-            if self.mode == 'I':
-                file = open(pathname, 'wb')
-            else:
-                file = open(pathname, 'w')
-            while True:
-                data = self.dataSock.recv(1024)
-                if not data:
-                    break
-                file.write(data)
-        
-        # existing file
-        else:
-            n = 1
-            while os.path.exists(pathname):
-                filename, extname = os.path.splitext(pathname)
-                pathname = filename + '{}'.format(n) + extname
-                n += 1
-            
-            if self.mode == 'I':
-                file = open(pathname, 'wb')
-            else:
-                file = open(pathname, 'w')
-            while True:
-                data = self.dataSock.recv(1024)
-                if not data:
-                    break
-                file.write(data)
-        
-        file.close()
-        self.stop_data_sock()
-        self._send_command('226 Transfer completed.\r\n')
-    
-    # return os system
-    def SYST(self, arg):
-        print('SYS:{}\n'.format(arg))
-        self._send_command('215 {} type.\r\n'.format(sys.platform))
-
-    
-    def HELP(self, arg):
-        print('HELP:{}\n'.format(arg))
-        help = """
-            214
-            USER [name], Its argument is used to specify the user's string. It is used for user authentication.
-            PASS [password], Its argument is used to specify the user password string.
-            PASV The directive requires server-DTP in a data port.
-            PORT [h1, h2, h3, h4, p1, p2] The command parameter is used for the data connection data port
-            LIST [dirpath or filename] This command allows the server to send the list to the passive DTP. If
-                 the pathname specifies a path or The other set of files, the server sends a list of files in
-                 the specified directory. Current information if you specify a file path name, the server will
-                 send the file.
-            CWD Type a directory path to change working directory.
-            PWD Get current working directory.
-            CDUP Changes the working directory on the remote host to the parent of the current directory.
-            DELE Deletes the specified remote file.
-            MKD Creates the directory specified in the RemoteDirectory parameter on the remote host.
-            RNFR [old name] This directive specifies the old pathname of the file to be renamed. This command
-                 must be followed by a "heavy Named "command to specify the new file pathname.
-            RNTO [new name] This directive indicates the above "Rename" command mentioned in the new path name
-                 of the file. These two Directive together to complete renaming files.
-            REST [position] Marks the beginning (REST) ​​The argument on behalf of the server you want to re-start
-                 the file transfer. This command and Do not send files, but skip the file specified data checkpoint.
-            RETR This command allows server-FTP send a copy of a file with the specified path name to the data
-                 connection The other end.
-            STOR This command allows server-DTP to receive data transmitted via a data connection, and data is
-                 stored as A file server site.
-            APPE This command allows server-DTP to receive data transmitted via a data connection, and data is stored
-                 as A file server site.
-            SYS  This command is used to find the server's operating system type.
-            HELP Displays help information.
-            QUIT This command terminates a user, if not being executed file transfer, the server will shut down
-                 Control connection\r\n.
-            """
-        self._send_command(help)
-
-    '''
     
     def QUIT(self, arg):
         print('QUIT:{}\n'.format(arg))

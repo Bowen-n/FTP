@@ -84,7 +84,7 @@ class Ui_Form(object):
 
 
         _translate = QtCore.QCoreApplication.translate
-        Form.setWindowTitle(_translate("Form", "Form"))
+        Form.setWindowTitle(_translate("Form", "FTP"))
         self.Local_label.setText(_translate("Form", "Local"))
         self.Remote_label.setText(_translate("Form", "Remote"))
         # self.Local_Return.setText(_translate("Form", "←"))
