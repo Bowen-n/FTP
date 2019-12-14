@@ -1,15 +1,19 @@
-
 import os
 import sys
+from ftplib import FTP
 from threading import Thread
+
 from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QApplication, QMainWindow,QInputDialog,QLineEdit,QWidget,QTreeWidgetItem,QMessageBox
-from PyQt5.QtGui import QIcon
 from PyQt5.QtCore import *
+from PyQt5.QtGui import QIcon
+from PyQt5.QtWidgets import (QApplication, QInputDialog, QLineEdit,
+                             QMainWindow, QMessageBox, QTreeWidgetItem,
+                             QWidget)
+from win32gui import *
+
+from dialog import *
 from GUI.ClientGui import Ui_Form
 from utils import fileProperty
-from ftplib import FTP
-from dialog import *
 
 app_icon_path = os.path.join(os.path.dirname(__file__), 'icons')
 qIcon = lambda name: QIcon(os.path.join(app_icon_path, name))
@@ -279,16 +283,25 @@ class MyMainGui(QWidget,Ui_Form):
         
         elif action == edit:
             pathname = os.path.join(self.pwd, str(item.text(0))).replace('\\', '/')
-            tmp_file = os.path.join(self.local_pwd, '##tmp##.txt')
+            tmp = item.text(0).split('.')
+            file_name = ''
+
+            if(len(tmp)) == 2:
+                file_extend = tmp[1]
+                file_name = '##tmp##.{}'.format(file_extend)
+                tmp_file = os.path.join(self.local_pwd, file_name)
+            else:
+                file_name = '##tmp##.txt'
+                tmp_file = os.path.join(self.local_pwd, file_name)
 
 
             def _edit_remotefile():
 
                 try:
-                    # download to a tmp file
+
+                    # download to a temporal file
                     def _callback(data):
-                        file.write(data)
-                    
+                            file.write(data)
                     file = open(tmp_file, 'wb')
                     fp = FTP()
                     fp.connect(host=self.ftp.host, port=self.ftp.port, timeout=self.ftp.timeout)
@@ -298,15 +311,39 @@ class MyMainGui(QWidget,Ui_Form):
                     fp.retrbinary(cmd='RETR '+pathname, callback=_callback)
                     fp.quit()
                     file.close()
-                    
                     print('download success \n')
-                    m_time = os.stat(tmp_file).st_mtime
+
+                    # open the file
                     import webbrowser
                     webbrowser.open(tmp_file)
-                    print('web open \n')
-                    while os.stat(tmp_file).st_mtime == m_time:
-                        pass
                     
+                    def __window_filter(hwnd, mouse):
+                        if IsWindow(hwnd) and IsWindowEnabled(hwnd) and IsWindowVisible(hwnd):
+                            window_names.append(GetWindowText(hwnd))
+
+                    # judge if the window is opened
+                    tmp_file_opened = False
+                    while not tmp_file_opened:
+                        window_names = []
+                        EnumWindows(__window_filter, 0)
+                        window_names = [elem for elem in window_names if elem != '']
+                        for name in window_names:
+                            if file_name in name:
+                                tmp_file_opened = True
+                                break
+
+                    # judge if the window is closed
+                    tmp_file_closed = False
+                    while not tmp_file_closed:
+                        window_names = []
+                        tmp_file_closed = True
+                        EnumWindows(__window_filter, 0)
+                        window_names = [elem for elem in window_names if elem != '']
+                        for name in window_names:
+                            if file_name in name:
+                                tmp_file_closed = False
+
+                    # upload
                     file = open(tmp_file, 'rb')
                     fp = FTP()
                     fp.connect(host=self.ftp.host, port=self.ftp.port, timeout=self.ftp.timeout)
@@ -319,23 +356,16 @@ class MyMainGui(QWidget,Ui_Form):
                     print('修改成功\n')
                     file.close()
                     os.remove(tmp_file)
+                    print('success')           
+
                 
                 except:
                     file.close()
                     os.remove(tmp_file)
                     print('对不起，您没有此操作的权限')
+                
             
             Thread(target=_edit_remotefile).start()
-
-
-
-
-
-
-
-
-
-
 
 
     def initialize(self):

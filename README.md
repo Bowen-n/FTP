@@ -1,5 +1,5 @@
 # FTP
- FTP client and server implemented in python with pyqt5
+用Python实现的FTP，包含客户端和服务器端，客户端在windows10系统运行，服务器端在linux系统运行。
 
 ## Code structure
 ```
