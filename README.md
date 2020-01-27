@@ -1,14 +1,28 @@
 # FTP
-用Python实现的FTP，包含客户端和服务器端，客户端在windows10系统运行，服务器端在linux系统运行。
+FTP Client and Server in Python, project for IS301 in SJTU. 
 
 ## Code structure
 ```
 |-- GUI
-|------ ClientGui.py       客户端界面设计
-|------ LoginGui.py        登录界面设计
-|-- icons                  客户端界面图标
-|-- dialog.py              客户端登录、下载、上传等会话的实现
-|-- utils.py               获取文件信息(名称、大小、修改时间)
-|-- client.py              FTP客户端实现
-|-- server.py              FTP服务器端实现
+|------ ClientGui.py       Client GUI
+|------ LoginGui.py        Login GUI
+|-- icons                  Client GUI icons
+|-- dialog.py              Dialogs like login, download and upload
+|-- utils.py               Get info of files
+|-- client.py              FTP Client
+|-- server.py              FTP Server
 ```
+
+## Feature
+1. User can access ftp server.
+2. Client GUI can show local and remote file list.
+3. User can download and upload file.
+4. User can new, delete, rename a file on local computer as well as remote server.
+5. User can edit remote file.
+
+## Client
+![Demo](img/demo.jpg)
+
+## How to use
+On local pc, just run *server.py*.<br>
+On server, run *server.py*.
