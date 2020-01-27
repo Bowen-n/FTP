@@ -24,5 +24,5 @@ FTP Client and Server in Python, project for IS301 in SJTU.
 ![Demo](img/demo.jpg)
 
 ## How to use
-On local pc, just run *server.py*.<br>
+On local pc, just run *client.py*.<br>
 On server, run *server.py*.
