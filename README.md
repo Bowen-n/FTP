@@ -4,7 +4,7 @@ FTP Client and Server in Python, project for IS301 in SJTU.
 ## Code structure
 ```
 |-- GUI
-|------ ClientGui.py       Client GUI
+|------ ClientGui.py       Client GUI in pyqt5
 |------ LoginGui.py        Login GUI
 |-- icons                  Client GUI icons
 |-- dialog.py              Dialogs like login, download and upload
